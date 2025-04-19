@@ -258,7 +258,7 @@ class _ModeSolverSemiVectorial():
             eigvals = eigs
             eigvecs = None
 
-        neff = self.wl * scipy.sqrt(eigvals) / (2 * numpy.pi)
+        neff = self.wl * numpy.sqrt(eigvals) / (2 * numpy.pi)
         if mode_profiles:
             phi = []
             for ieig in range(neigs):
@@ -970,7 +970,7 @@ class _ModeSolverVectorial():
                                         return_eigenvectors=mode_profiles,
                                         sigma=shift)
 
-        neffs = self.wl * scipy.sqrt(eigvals) / (2 * numpy.pi)
+        neffs = self.wl * numpy.sqrt(eigvals) / (2 * numpy.pi)
         if mode_profiles:
             Hxs = []
             Hys = []
@@ -1032,7 +1032,7 @@ class FDMode():
     def norm(self):
         x = centered1d(self.x)
         y = centered1d(self.y)
-        return scipy.sqrt(trapz2(self.intensity(), x=x, y=y))
+        return numpy.sqrt(trapz2(self.intensity(), x=x, y=y))
 
     def normalize(self):
         n = self.norm()

@@ -165,9 +165,10 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
             returns the permittivity profile of the structure,
             interpolating if necessary.
         '''
-        interp_real = interpolate.interp2d(self.x, self.y, self.eps.real)
-        interp_imag = interpolate.interp2d(self.x, self.y, self.eps.imag)
-        interp = lambda x, y: interp_real(x, y) + 1.j*interp_imag(x, y)
+        interp_real = interpolate.RegularGridInterpolator((self.x, self.y), self.eps.real.T)
+        interp_imag = interpolate.RegularGridInterpolator((self.x, self.y), self.eps.imag.T)
+        interp = lambda x, y: (interp_real((x.reshape((1, -1)), y.reshape((-1, 1)))) + 
+                           1.j*interp_imag((x.reshape((1, -1)), y.reshape((-1, 1)))))
         return interp
 
     @property
@@ -177,7 +178,7 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
             returns the refractive index profile of the structure,
             interpolating if necessary.
         '''
-        return interpolate.interp2d(self.x, self.y, self.n)
+        return interpolate.RegularGridInterpolator((self.x, self.y), self.n)
 
     def _add_triangular_sides(self, xy_mask, angle, y_top_right, y_bot_left,
                               x_top_right, x_bot_left, n_material):
@@ -297,7 +298,7 @@ class Structure(_AbstractStructure):
         self.x_step = x_step
         self.y_step = y_step
         self.n_background = n_background
-        self._n = np.ones((self.y.size,self.x.size), 'complex_') * n_background
+        self._n = np.ones((self.y.size,self.x.size), 'complex') * n_background
 
     @property
     def n(self):
